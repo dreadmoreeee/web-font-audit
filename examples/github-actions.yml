@@ -1,0 +1,34 @@
+# Example GitHub Actions job: fail the build when a deployed page goes over its
+# font budget. Copy to .github/workflows/fonts.yml in your own repository.
+name: font budget
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays 06:00 UTC
+
+jobs:
+  fonts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          pip install "web-font-audit[woff2] @ git+https://github.com/dreadmoreeee/web-font-audit"
+          python -m playwright install --with-deps chromium
+      - name: Audit
+        run: |
+          web-font-audit https://example.com/ https://example.com/pricing \
+            --max-font-bytes 150KB --max-fonts 4 --max-families 2 \
+            --fail-on font-display,legacy-format,unused-preload,preload-crossorigin,load-error \
+            --md-out fonts.md --json-out fonts.json
+      - name: Summary
+        if: always()
+        run: cat fonts.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: font-audit
+          path: fonts.*

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "web-font-audit"
+version = "1.0.0"
+description = "Audit the web fonts a page loads: files, @font-face, preloads, font-display, formats and real subsetting savings."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Marvin Palencia" }]
+keywords = ["web fonts", "performance", "woff2", "font-display", "subsetting", "playwright"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+]
+dependencies = ["playwright>=1.40", "fonttools>=4.40"]
+
+[project.optional-dependencies]
+woff2 = ["brotli>=1.0"]
+test = ["pytest>=7"]
+
+[project.scripts]
+web-font-audit = "web_font_audit.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/dreadmoreeee/web-font-audit"
+
+[tool.setuptools]
+packages = ["web_font_audit"]
+
+[tool.setuptools.package-data]
+web_font_audit = ["page_script.js"]
